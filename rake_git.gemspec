@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Rake tasks for interacting with git.'
   spec.description =
-    'Allows committing using git.'
+    'Allows performing git actions such as committing.'
   spec.homepage = 'https://github.com/infrablocks/rake_git'
   spec.license = 'MIT'
 

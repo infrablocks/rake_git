@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.7'
 
   spec.add_dependency 'colored2', '~> 3.1'
+  spec.add_dependency 'git', '~> 1.13', '>= 1.13.2'
   spec.add_dependency 'rake_factory', '0.32.0.pre.2'
 
   spec.metadata['rubygems_mfa_required'] = 'false'

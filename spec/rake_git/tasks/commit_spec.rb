@@ -92,6 +92,24 @@ describe RakeGit::Tasks::Commit do
         .to(have_received(:commit)
               .with('Add important stuff.'))
     end
+
+    it 'adds before committing' do
+      define_task(message: 'Add important stuff.')
+
+      stub_output
+      git_base = stub_git(
+        path: '.',
+        added: %w[added/file1 added/file2],
+        changed: %w[changed/file1 changed/file2],
+        deleted: %w[deleted/file1 deleted/file2],
+        untracked: %w[untracked/file1 untracked/file2]
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(git_base).to(have_received(:add).twice.ordered)
+      expect(git_base).to(have_received(:commit).ordered)
+    end
   end
 
   describe 'when message provided through argument' do
@@ -110,6 +128,130 @@ describe RakeGit::Tasks::Commit do
       expect(git_base)
         .to(have_received(:commit)
               .with('Message in argument.'))
+    end
+  end
+
+  describe 'when stage_tracked_files is false' do
+    it 'does not stage tracked files' do
+      define_task(
+        message: 'Add important stuff.',
+        stage_tracked_files: false
+      )
+
+      stub_output
+      git_base = stub_git(
+        path: '.',
+        added: %w[added/file1 added/file2],
+        changed: %w[changed/file1 changed/file2],
+        deleted: %w[deleted/file1 deleted/file2]
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(git_base)
+        .not_to(have_received(:add)
+              .with(a_collection_containing_exactly(
+                      'added/file1', 'added/file2',
+                      'changed/file1', 'changed/file2',
+                      'deleted/file1', 'deleted/file2'
+                    ),
+                    all: true))
+    end
+  end
+
+  describe 'when stage_tracked_files is true' do
+    it 'stages all tracked files' do
+      define_task(
+        message: 'Add important stuff.',
+        stage_tracked_files: true
+      )
+
+      stub_output
+      git_base = stub_git(
+        path: '.',
+        added: %w[added/file1 added/file2],
+        changed: %w[changed/file1 changed/file2],
+        deleted: %w[deleted/file1 deleted/file2]
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(git_base)
+        .to(have_received(:add)
+              .with(a_collection_containing_exactly(
+                      'added/file1', 'added/file2',
+                      'changed/file1', 'changed/file2',
+                      'deleted/file1', 'deleted/file2'
+                    ),
+                    all: true))
+    end
+  end
+
+  describe 'when stage_untracked_files is false' do
+    it 'does not stage untracked files' do
+      define_task(
+        message: 'Add important stuff.',
+        stage_untracked_files: false
+      )
+
+      stub_output
+      git_base = stub_git(
+        path: '.',
+        untracked: %w[untracked/file1 untracked/file2]
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(git_base)
+        .not_to(have_received(:add)
+                  .with(a_collection_containing_exactly(
+                          'untracked/file1', 'untracked/file2'
+                        ),
+                        all: true))
+    end
+  end
+
+  describe 'when stage_untracked_files is true' do
+    it 'stages all untracked files' do
+      define_task(
+        message: 'Add important stuff.',
+        stage_tracked_files: true
+      )
+
+      stub_output
+      git_base = stub_git(
+        path: '.',
+        untracked: %w[untracked/file1 untracked/file2]
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(git_base)
+        .to(have_received(:add)
+              .with(a_collection_containing_exactly(
+                      'untracked/file1', 'untracked/file2'
+                    ),
+                    all: true))
+    end
+  end
+
+  describe 'when working_directory provided' do
+    it 'works on the provided working directory' do
+      define_task(
+        message: 'Add important stuff.',
+        working_directory: './some/working-directory'
+      )
+
+      stub_output
+      stub_git(
+        path: './some/working-directory'
+      )
+
+      Rake::Task['git:commit'].invoke
+
+      expect(Git)
+        .to(have_received(:open)
+              .with('./some/working-directory'))
     end
   end
 

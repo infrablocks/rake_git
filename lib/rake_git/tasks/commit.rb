@@ -22,6 +22,7 @@ module RakeGit
 
         maybe_stage_tracked_files(base)
         maybe_stage_untracked_files(base)
+
         commit(base)
       end
 
@@ -30,26 +31,31 @@ module RakeGit
       def maybe_stage_tracked_files(base)
         return unless stage_tracked_files
 
-        status = base.status
-        base.add(
-          [
-            *status.added.keys,
-            *status.changed.keys,
-            *status.deleted.keys
-          ],
-          all: true
-        )
+        base.add(tracked_files(base), all: true)
       end
 
       def maybe_stage_untracked_files(base)
         return unless stage_untracked_files
 
-        status = base.status
-        base.add(status.untracked.keys, all: true)
+        base.add(untracked_files(base), all: true)
       end
 
       def commit(base)
         base.commit(message)
+      end
+
+      def tracked_files(base)
+        status = base.status
+
+        [
+          *status.added.keys,
+          *status.changed.keys,
+          *status.deleted.keys
+        ]
+      end
+
+      def untracked_files(base)
+        base.lib.untracked_files
       end
     end
   end

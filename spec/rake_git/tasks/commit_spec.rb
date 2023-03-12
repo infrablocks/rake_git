@@ -279,14 +279,12 @@ describe RakeGit::Tasks::Commit do
   end
 
   def stub_git_base(opts)
-    git_status = stub_git_status(opts)
-
-    git_base = instance_double(Git::Base)
-    allow(git_base).to(receive(:status).and_return(git_status))
-    allow(git_base).to(receive(:add))
-    allow(git_base).to(receive(:commit))
-
-    git_base
+    base = instance_double(Git::Base)
+    stub_git_base_status(base, opts)
+    stub_git_base_lib(base, opts)
+    stub_git_base_add(base)
+    stub_git_base_commit(base)
+    base
   end
 
   def stub_git_status(opts)
@@ -294,9 +292,31 @@ describe RakeGit::Tasks::Commit do
       Git::Status,
       added: to_status_file_hash(opts[:added] || []),
       changed: to_status_file_hash(opts[:changed] || []),
-      deleted: to_status_file_hash(opts[:deleted] || []),
-      untracked: to_status_file_hash(opts[:untracked] || [])
+      deleted: to_status_file_hash(opts[:deleted] || [])
     )
+  end
+
+  def stub_git_lib(opts)
+    instance_double(
+      Git::Lib,
+      untracked_files: opts[:untracked]
+    )
+  end
+
+  def stub_git_base_status(base, opts)
+    allow(base).to(receive(:status).and_return(stub_git_status(opts)))
+  end
+
+  def stub_git_base_lib(base, opts)
+    allow(base).to(receive(:lib).and_return(stub_git_lib(opts)))
+  end
+
+  def stub_git_base_add(base)
+    allow(base).to(receive(:add))
+  end
+
+  def stub_git_base_commit(base)
+    allow(base).to(receive(:commit))
   end
 
   def stub_git_status_file

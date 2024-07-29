@@ -3,7 +3,7 @@ PATH
   specs:
     rake_git (0.3.0.pre.2)
       colored2 (~> 3.1)
-      git (~> 1.13, >= 1.13.2)
+      git (>= 1.13.2, < 3.0)
       rake_factory (~> 0.33)
 
 GEM
@@ -38,8 +38,10 @@ GEM
     faraday-net_http (3.1.0)
       net-http
     gem-release (2.2.2)
-    git (1.19.1)
+    git (2.1.1)
+      activesupport (>= 5.0)
       addressable (~> 2.8)
+      process_executer (~> 1.1)
       rchardet (~> 1.8)
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
@@ -67,6 +69,7 @@ GEM
     parser (3.3.4.0)
       ast (~> 2.4.1)
       racc
+    process_executer (1.1.0)
     public_suffix (6.0.1)
     racc (1.8.0)
     rainbow (3.1.1)

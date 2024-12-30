@@ -40,7 +40,7 @@ GEM
       logger
     faraday-net_http (3.1.1)
       net-http
-    gem-release (2.2.3)
+    gem-release (2.2.4)
     git (2.3.3)
       activesupport (>= 5.0)
       addressable (~> 2.8)
